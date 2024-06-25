@@ -340,7 +340,24 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
     if (widget.controller != null) {
       widget.controller?.validator = (value) {
         if (widget.controller!.validator!(value) != null) {
-          return widget.controller!.validator!(value);
+          var validatorResult = widget.controller!.validator!(value);
+          if (validatorResult != null) {
+            return validatorResult;
+          }
+        }
+
+        var result = widget.controller!.validator!(value);
+        if (result is String?) {
+          if (result != null) {
+            return result;
+          }
+        } else {
+          return (result as Future<String?>).then((value) {
+            if (value != null) {
+              return value;
+            }
+            return Future.value(validatorMessage);
+          });
         }
         return validatorMessage;
       };
