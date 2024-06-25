@@ -339,8 +339,12 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
 
     if (widget.controller != null) {
       widget.controller?.validator = (value) {
-        if (widget.controller!.validator!(value) != null) {
-          var validatorResult = widget.controller!.validator!(value);
+        if (widget.validator != null) {
+          var validatorResult = widget.validator!(PhoneNumber(
+            countryISOCode: _selectedCountry.code,
+            countryCode: '+${_selectedCountry.dialCode}',
+            number: value ?? '',
+          ));
           if (validatorResult != null) {
             return validatorResult;
           }
