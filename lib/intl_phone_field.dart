@@ -1,6 +1,7 @@
 library intl_phone_field;
 
 import 'dart:async';
+import 'package:arturs_common_utils/form-control.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,8 +57,8 @@ class IntlPhoneField extends StatefulWidget {
 
   /// Controls the text being edited.
   ///
-  /// If null, this widget will create its own [TextEditingController].
-  final TextEditingController? controller;
+  /// If null, this widget will create its own [FormControl].
+  final FormControl? controller;
 
   /// Defines the keyboard focus for this widget.
   ///
@@ -334,6 +335,15 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       } else {
         number = number.replaceFirst(RegExp("^${_selectedCountry.fullCountryCode}"), "");
       }
+    }
+
+    if (widget.controller != null) {
+      widget.controller?.validator = (value) {
+        if (widget.controller!.validator!(value) != null) {
+          return widget.controller!.validator!(value);
+        }
+        return validatorMessage;
+      };
     }
 
     if (widget.autovalidateMode == AutovalidateMode.always) {
