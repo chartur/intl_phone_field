@@ -1,3 +1,6 @@
+import 'package:arturs_common_utils/form-control-validator.dart';
+import 'package:arturs_common_utils/form-control.dart';
+import 'package:arturs_common_utils/form-group.dart';
 import 'package:flutter/material.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
@@ -11,6 +14,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final FormGroup signUpGroup = FormGroup(
+      controls: {
+        'phone': FormControl(
+            validator: FormControlValidator()
+                .phone()
+                .build()
+        )
+      }
+  );
   GlobalKey<FormState> _formKey = GlobalKey();
 
   FocusNode focusNode = FocusNode();
@@ -55,12 +67,14 @@ class _MyAppState extends State<MyApp> {
                 ),
                 IntlPhoneField(
                   focusNode: focusNode,
+                  controller: signUpGroup.get('phone'),
                   decoration: InputDecoration(
                     labelText: 'Phone Number',
                     border: OutlineInputBorder(
                       borderSide: BorderSide(),
                     ),
                   ),
+                  initialCountryCode: 'AM',
                   languageCode: "en",
                   onChanged: (phone) {
                     print(phone.completeNumber);
@@ -76,8 +90,8 @@ class _MyAppState extends State<MyApp> {
                   child: Text('Submit'),
                   color: Theme.of(context).primaryColor,
                   textColor: Colors.white,
-                  onPressed: () {
-                    _formKey.currentState?.validate();
+                  onPressed: () async {
+                    print(signUpGroup.validate());
                   },
                 ),
               ],

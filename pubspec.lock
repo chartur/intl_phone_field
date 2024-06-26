@@ -30,10 +30,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: b790dc1a7d74e27cf6d12016cdda573dcf242dd9
+      resolved-ref: "34aaa33a318ab8d656ea182d3085e364a9e085d4"
       url: "git@github.com:chartur/flutter_common_utils.git"
     source: git
-    version: "0.0.3"
+    version: "0.0.4"
   async:
     dependency: transitive
     description:

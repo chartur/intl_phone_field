@@ -2,14 +2,14 @@
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
   arturs_common_utils:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: b790dc1a7d74e27cf6d12016cdda573dcf242dd9
+      resolved-ref: "18e72cde2c8456bb31bb08adbb3ac844b2a8c4ba"
       url: "git@github.com:chartur/flutter_common_utils.git"
     source: git
-    version: "0.0.3"
+    version: "0.0.5"
   async:
     dependency: transitive
     description:
@@ -82,7 +82,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "3.3.1"
+    version: "3.3.2"
   leak_tracker:
     dependency: transitive
     description:

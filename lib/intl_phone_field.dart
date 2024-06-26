@@ -308,6 +308,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
   late Country _selectedCountry;
   late List<Country> filteredCountries;
   late String number;
+  String? Function(String? value)? controllerOriginalValidation;
 
   String? validatorMessage;
 
@@ -337,34 +338,9 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       }
     }
 
-    if (widget.controller != null) {
-      widget.controller?.validator = (value) {
-        if (widget.validator != null) {
-          var validatorResult = widget.validator!(PhoneNumber(
-            countryISOCode: _selectedCountry.code,
-            countryCode: '+${_selectedCountry.dialCode}',
-            number: value ?? '',
-          ));
-          if (validatorResult != null) {
-            return validatorResult;
-          }
-        }
-
-        var result = widget.controller!.validator!(value);
-        if (result is String?) {
-          if (result != null) {
-            return result;
-          }
-        } else {
-          return (result as Future<String?>).then((value) {
-            if (value != null) {
-              return value;
-            }
-            return Future.value(validatorMessage);
-          });
-        }
-        return validatorMessage;
-      };
+    if (widget.controller?.validator != null) {
+      controllerOriginalValidation = widget.controller!.validator;
+      widget.controller!.setValidatorCallback(setControllerValidator);
     }
 
     if (widget.autovalidateMode == AutovalidateMode.always) {
@@ -384,6 +360,32 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         });
       }
     }
+  }
+
+  String? setControllerValidator(value) {
+    var phoneNumber = PhoneNumber(
+      countryISOCode: _selectedCountry.code,
+      countryCode: '+${_selectedCountry.dialCode}',
+      number: value ?? '',
+    );
+    try {
+      phoneNumber.isValidNumber();
+    } catch (e) {
+      return widget.invalidNumberMessage;
+    }
+
+    return controllerOriginalValidation!(phoneNumber.completeNumber);
+  }
+
+  String? defaultValidatorCallback(value) {
+    if (value == null || !isNumeric(value)) return validatorMessage;
+    if (!widget.disableLengthCheck) {
+      return value.length >= _selectedCountry.minLength && value.length <= _selectedCountry.maxLength
+          ? null
+          : widget.invalidNumberMessage;
+    }
+
+    return validatorMessage;
   }
 
   Future<void> _changeCountry() async {
@@ -457,16 +459,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
 
         widget.onChanged?.call(phoneNumber);
       },
-      validator: (value) {
-        if (value == null || !isNumeric(value)) return validatorMessage;
-        if (!widget.disableLengthCheck) {
-          return value.length >= _selectedCountry.minLength && value.length <= _selectedCountry.maxLength
-              ? null
-              : widget.invalidNumberMessage;
-        }
-
-        return validatorMessage;
-      },
+      validator: defaultValidatorCallback,
       maxLength: widget.disableLengthCheck ? null : _selectedCountry.maxLength,
       keyboardType: widget.keyboardType,
       inputFormatters: widget.inputFormatters,
